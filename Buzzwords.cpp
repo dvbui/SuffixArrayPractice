@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstring>
 #include <vector>
+#include <map>
 #define ii pair<int,int>
 using namespace std;
 const int maxn = 2000000;
@@ -11,7 +12,7 @@ string t;
 int n;
 int cnt[maxn],p[maxn],c[maxn];
 int cn[maxn],pn[maxn];
-int rnk[maxn],lcp[maxn],rlcp[maxn];
+int rnk[maxn],lcp[maxn];
 int classes;
 
 void solve()
@@ -21,6 +22,7 @@ void solve()
         if ('A' <= s[i] and s[i] <= 'Z')
             t += s[i];
     }
+
     s=t;
     s+='$';
     n = s.size();
@@ -138,20 +140,47 @@ void solve()
         cout << s[p[rnk[i]]] << ' ' << lcp[i] << '\n';
     cout << '\n';*/
 
-    for (int i=0; i+1<n; i++) {
+    /*for (int i=0; i+1<n; i++) {
         cout << s.substr(p[i], s.size() - p[i]) << ' ' << s.substr(p[i + 1], s.size() - p[i + 1]) << ' ' << lcp[i]
              << '\n';
-    }
+    }*/
 
+    for (int i=1; i<=n; i++)
+    {
+        int res = 0;
+        int cnt = 0;
+        for (int j=0; j+1<n; j++) {
+            if (lcp[j] >= i) {
+                cnt++;
+            }
+            else {
+                res = max(res,cnt);
+                cnt = 0;
+            }
+        }
+
+        res = max(res,cnt);
+
+        if (res==0) {
+            cout << '\n';
+            break;
+        }
+        else
+            cout << res+1 << '\n';
+    }
 
 }
 int main()
 {
     ios_base::sync_with_stdio(0);
-    freopen("input.txt","r",stdin);
-    freopen("output.txt","w",stdout);
-    while (getline(cin,s) and s!="")
+    //freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    //int cnt = 0;
+    while (getline(cin,s) and s!="") {
+        //cnt++;
+        //cout << "Case " << cnt << '\n';
         solve();
+    }
 
     return 0;
 }
