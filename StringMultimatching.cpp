@@ -8,7 +8,7 @@
 #include <vector>
 #include <set>
 using namespace std;
-const int maxN = (int) 1e5;
+const int maxN = (int) 2e5;
 const int maxn = (int) 2e6;
 const int alphabet = 256;
 int N;
@@ -24,7 +24,7 @@ int rnk[maxn];
 int lcp[maxn];
 int k;
 int classes;
-set<int> V[maxN+1];
+set<int> res;
 void prepareS()
 {
     getline(cin,S);
@@ -36,7 +36,7 @@ void prepareS()
         sz[i] = S.size();
         startingPosition[i] = s.size();
         s+=S+'\1';
-        V[i].clear();
+        //V[i].clear();
     }
     TPosition = s.size();
     getline(cin,T);
@@ -150,47 +150,54 @@ string subString(int x)
 }
 void process()
 {
+    /*cout << "p TPosit \n";
+    for (int i=0; i<n; i++)
+        cout << (p[i]>=TPosition) << ' ';
+    cout << '\n';
+
+    cout << "lcp \n";
+    for (int i=0; i<n; i++)
+        cout << lcp[i] << ' ';
+    cout << '\n';*/
+
     //cout << s << '\n';
-
-    for (int i=TPosition; i<n; i++)
-    {
-        int j=rnk[i];
-        int realLCP = lcp[j];
-        while (j+1<n and realLCP>0)
-        {
-            int vt = upper_bound(startingPosition,startingPosition+N+1,p[j+1]) - startingPosition - 1;
-            if (realLCP>=sz[vt] and p[j+1]==startingPosition[vt]) {
-                //cout << subString(i) << ' ' << subString(p[j]) << ' ' << i - TPosition << ' ' << p[j + 1] << ' '
-                //     << startingPosition[vt] << ' ' << realLCP << ' ' << sz[vt] << ' ' << '\n';
-                V[vt].insert(i - TPosition);
-            }
-            j++;
-            realLCP = min(realLCP,lcp[j]);
-        }
-
-        int t=rnk[i];
-        realLCP = lcp[t-1];
-        while (t-1>0 and realLCP>0)
-        {
-            t--;
-            int vt = upper_bound(startingPosition,startingPosition+N+1,p[t]) - startingPosition - 1;
-            if (realLCP>=sz[vt] and p[t]==startingPosition[vt]) {
-                V[vt].insert(i - TPosition);
-                //cout << subString(i) << ' ' << subString(p[t]) << ' ' << i - TPosition << ' ' << p[t] << ' '
-                //     << startingPosition[vt] << ' ' << realLCP << '\n';
-            }
-
-            if (t-1>0)
-                realLCP = min(realLCP,lcp[t-1]);
-        }
-    }
-
     for (int i=1; i<=N; i++)
     {
-        for (auto it=V[i].begin(); it!=V[i].end(); it++)
+        res.clear();
+        int j=rnk[startingPosition[i]];
+        //cout << i << ' ' << j << '\n';
+        int commonLength = lcp[j];
+        while (j<n and commonLength>=sz[i])
+        {
+            if (p[j+1]>=TPosition)
+                res.insert(p[j+1]-TPosition);
+            j++;
+            commonLength=min(commonLength,lcp[j]);
+        }
+        //cout << "firstLoop " << j << ' ' << commonLength << '\n';
+
+        j=rnk[startingPosition[i]]-1;
+        if (j>=0)
+        {
+            commonLength = lcp[j];
+            while (j>=0 and commonLength>=sz[i])
+            {
+                if (p[j]>=TPosition)
+                    res.insert(p[j]-TPosition);
+                j--;
+                if (j>=0)
+                    commonLength=min(commonLength,lcp[j]);
+            }
+        }
+
+        //cout << "secondLoop " << j << ' ' << commonLength << '\n';
+        //cout << '\n';
+
+        for (auto it=res.begin(); it!=res.end(); it++)
             cout << *it << ' ';
         cout << '\n';
     }
+
 }
 void solve()
 {
